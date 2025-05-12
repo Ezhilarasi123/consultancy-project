@@ -66,7 +66,7 @@ const EmployeeManagement = () => {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/employees');
+      const response = await axios.get('https://consultancy-project-backend-wouc.onrender.com/api/employees');
       setEmployees(response.data);
       setLoading(false);
     } catch (error) {
@@ -96,7 +96,7 @@ const EmployeeManagement = () => {
 
       console.log('Sending employee data:', employeeData);
 
-      const response = await axios.post('http://localhost:5000/api/employees', employeeData);
+      const response = await axios.post('https://consultancy-project-backend-wouc.onrender.com/api/employees', employeeData);
       
       setEmployees([response.data, ...employees]);
       setIsAddModalOpen(false);

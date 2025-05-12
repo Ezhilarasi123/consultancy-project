@@ -78,7 +78,7 @@ const ProductsManagement = () => {
     const fetchProducts = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/products', {
+        const response = await axios.get('https://consultancy-project-backend-wouc.onrender.com/api/products', {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -137,7 +137,7 @@ const ProductsManagement = () => {
       console.log('Sending product data:', productData); // Debug log
 
       // Make API call
-      const response = await axios.post('http://localhost:5000/api/products', productData, {
+      const response = await axios.post('https://consultancy-project-backend-wouc.onrender.com/api/products', productData, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -192,7 +192,7 @@ const ProductsManagement = () => {
       }
 
       // Make API call to delete the product
-      const response = await axios.delete(`http://localhost:5000/api/products/${selectedProduct._id}`, {
+      const response = await axios.delete(`https://consultancy-project-backend-wouc.onrender.com/api/products/${selectedProduct._id}`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`

@@ -54,7 +54,7 @@ const OrdersManagement = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/orders', {
+        const response = await axios.get('https://consultancy-project-backend-wouc.onrender.com/api/orders', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`
           }
@@ -73,7 +73,7 @@ const OrdersManagement = () => {
   // Update order status
   const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
     try {
-      await axios.put(`http://localhost:5000/api/orders/${orderId}/status`, 
+      await axios.put(`https://consultancy-project-backend-wouc.onrender.com/orders/${orderId}/status`, 
         { status },
         {
           headers: {
