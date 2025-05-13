@@ -57,8 +57,12 @@ app.use('/api/orders', auth);
 // Create new order
 app.post('/api/orders', async (req, res) => {
   try {
+    if (!req.user) {
+      console.error('No user found in req.user!');
+      return res.status(401).json({ success: false, error: 'User not authenticated' });
+    }
+    console.log('User from auth middleware (POST /api/orders):', req.user);
     console.log('Received order request:', req.body);
-    console.log('User from auth middleware:', req.user);
 
     const {
       customer,
@@ -117,7 +121,29 @@ app.get('/api/orders', checkRole(['admin']), async (req, res) => {
 // Get user's orders
 app.get('/api/orders/my-orders', async (req, res) => {
   try {
-    const orders = await Order.find({ createdBy: req.user._id }).sort({ createdAt: -1 });
+    if (!req.user) {
+      console.error('No user found in req.user!');
+      return res.status(401).json({ success: false, error: 'User not authenticated' });
+    }
+    console.log('User from auth middleware (GET /api/orders/my-orders):', req.user);
+
+    // Find orders either by createdBy or by matching customer email
+    const orders = await Order.find({
+      $or: [
+        { createdBy: req.user._id },
+        { 'customer.email': req.user.email }
+      ]
+    }).sort({ createdAt: -1 });
+
+    // Update orders that don't have createdBy field
+    for (const order of orders) {
+      if (!order.createdBy) {
+        order.createdBy = req.user._id;
+        await order.save();
+        console.log(`Updated order ${order.orderNumber} with createdBy field`);
+      }
+    }
+
     res.json({
       success: true,
       orders
@@ -157,6 +183,42 @@ app.put('/api/orders/:orderId/status', checkRole(['admin']), async (req, res) =>
     res.status(500).json({
       success: false,
       error: error.message || 'Failed to update order status'
+    });
+  }
+});
+
+// Fix missing createdBy field in orders (one-time fix)
+app.post('/api/orders/fix-missing-createdby', auth, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, error: 'User not authenticated' });
+    }
+
+    // Find all orders for this user's email that don't have createdBy
+    const orders = await Order.find({
+      'customer.email': req.user.email,
+      createdBy: { $exists: false }
+    });
+
+    console.log(`Found ${orders.length} orders to update`);
+
+    // Update each order
+    for (const order of orders) {
+      order.createdBy = req.user._id;
+      await order.save();
+      console.log(`Updated order ${order.orderNumber} with createdBy: ${req.user._id}`);
+    }
+
+    res.json({
+      success: true,
+      message: `Updated ${orders.length} orders`,
+      orders
+    });
+  } catch (error) {
+    console.error('Error fixing orders:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to fix orders'
     });
   }
 });
