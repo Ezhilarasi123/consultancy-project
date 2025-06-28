@@ -33,10 +33,5 @@ The platform enhances digital engagement and streamlines internal operations by 
 ✅ Streamline internal operations and record management.  
 ✅ Provide a scalable solution that supports future growth.
 
----
 
-## 🚀 Getting Started
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/your-username/sri-madhura-engineering.git
-   cd sri-madhura-engineering
+
